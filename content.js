@@ -1,12 +1,24 @@
 // Function to inject the button when the main element is available
+const link = document.createElement("link");
+link.rel = "stylesheet";
+link.href = chrome.runtime.getURL("css/all.min.css"); // Ensure this path points to your Font Awesome CSS
+document.head.appendChild(link);
+
 function injectButton() {
   const main = document.querySelector("main");
 
   if (main) {
     console.log("Main element found!");
 
+    const icon = document.createElement("i");
+    icon.classList.add("fas", "fa-chevron-down"); // Font Awesome classes for the down chevron
+    icon.style.fontSize = "12px";
+    icon.style.color = "white";
+    icon.style.paddingLeft = "8px";
+
     const button = document.createElement("button");
-    button.textContent = "HELLO";
+    button.textContent = "Response Length";
+    button.appendChild(icon);
     button.id = "top-left-button";
 
     button.addEventListener("click", () => {

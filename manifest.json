@@ -11,7 +11,16 @@
         "https://developer.chrome.com/docs/webstore/*", 
         "*://chatgpt.com/*"
       ],
-      "css": ["style.css"]
+      "css": ["style.css", "css/all.min.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "webfonts/*",
+        "css/all.min.css"
+      ],
+      "matches": ["<all_urls>"]
     }
   ]
 }
