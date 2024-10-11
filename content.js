@@ -11,7 +11,7 @@ function injectButton() {
     console.log("Main element found!");
 
     const icon = document.createElement("i");
-    icon.classList.add("fas", "fa-chevron-down"); // Font Awesome classes for the down chevron
+    icon.classList.add("fas", "fa-chevron-down");
     icon.style.fontSize = "12px";
     icon.style.color = "white";
     icon.style.paddingLeft = "8px";
