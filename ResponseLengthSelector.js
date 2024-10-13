@@ -25,10 +25,44 @@ const ResponseLengthSelector = () => {
     };
   }, []);
 
+  //its adding another p, if theres a p with class placeholder, if theres already text then append it to the front
+  useEffect(() => {
+    const updatePromptTextarea = () => {
+      console.log("in updatePromptTextarea");
+      const promptTextarea = document.getElementById("prompt-textarea");
+      const placeholder = promptTextarea.querySelector("p.placeholder");
+      if (promptTextarea && selectedLength && !isAnyLength) {
+        if (placeholder) {
+          const instruction = document.createElement("p");
+          instruction.className = "length-instruction";
+          instruction.textContent = `in under ${selectedLength} words or less`;
+          promptTextarea.appendChild(instruction);
+          // Remove the first child of the promptTextarea
+          if (
+            promptTextarea.firstChild &&
+            promptTextarea.firstChild.textContent.trim() === ""
+          ) {
+            console.log("removing first child");
+            promptTextarea.removeChild(promptTextarea.firstChild);
+          }
+        } else {
+          console.log(
+            "appending instruction to first child since there is already text"
+          );
+          promptTextarea.firstChild.textContent =
+            `in under ${selectedLength} words or less` +
+            promptTextarea.firstChild.textContent;
+        }
+      }
+    };
+    updatePromptTextarea();
+  }, [selectedLength, isAnyLength]);
+
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleSelectLength = (length) => {
     console.log("handle option change", length);
+    setIsAnyLength(false);
     setSelectedLength(length);
     setIsOpen(false);
   };
@@ -57,9 +91,7 @@ const ResponseLengthSelector = () => {
               length={length}
             />
           ))}
-          <button onClick={() => setIsAnyLength(!isAnyLength)}>
-            Any Length
-          </button>
+          <button onClick={() => setIsAnyLength(true)}>Any Length</button>
         </div>
       )}
     </div>
