@@ -14,7 +14,6 @@ const injectReactComponent = () => {
     <React.Fragment>
       <ResponseLengthSelector />
       <ScrollUpButton />
-      <div>Test</div>
     </React.Fragment>
   );
 };

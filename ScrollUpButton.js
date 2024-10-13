@@ -11,13 +11,13 @@ const ScrollUpButton = () => {
     }
   };
 
+  //checks if the end of the last article is at the bottom of the page
   const checkIfAtBottom = () => {
     const articles = document.getElementsByTagName("article");
     if (articles.length > 0) {
       const lastArticle = articles[articles.length - 1];
       const rect = lastArticle.getBoundingClientRect();
       const isAtBottom = rect.bottom <= window.innerHeight;
-      console.log("isAtBottom", isAtBottom);
       setIsAtBottom(isAtBottom);
     }
   };
