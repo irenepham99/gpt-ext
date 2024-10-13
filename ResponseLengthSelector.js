@@ -25,6 +25,48 @@ const ResponseLengthSelector = () => {
     };
   }, []);
 
+  useEffect(() => {
+    console.log("in use effect for button listening");
+    const handleSubmit = (event) => {
+      console.log("in handle submit click detected");
+      const form = event.target.closest("form");
+      if (form) {
+        const p = form.querySelector("p");
+        if (p) {
+          console.log("Submitting form with value:", p.textContent);
+        }
+      }
+    };
+
+    const attachListeners = () => {
+      //select butttons that are not disabled
+      const sendButton = document.querySelector(
+        'button[data-testid="send-button"]:not(:disabled)'
+      );
+      if (sendButton) {
+        console.log("found the send button");
+        sendButton.addEventListener("click", handleSubmit, true);
+        sendButton.addEventListener("mousedown", handleSubmit, true);
+      } else {
+        console.log("did not find the send button");
+        // If the button isn't found, try again after a short delay
+        setTimeout(attachListeners, 3000);
+      }
+    };
+
+    attachListeners();
+
+    return () => {
+      const sendButton = document.querySelector(
+        'button[data-testid="send-button"]'
+      );
+      if (sendButton) {
+        sendButton.removeEventListener("click", handleSubmit);
+        sendButton.removeEventListener("mousedown", handleSubmit);
+      }
+    };
+  }, []);
+
   //its adding another p, if theres a p with class placeholder, if theres already text then append it to the front
   useEffect(() => {
     const updatePromptTextarea = () => {
