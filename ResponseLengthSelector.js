@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { createRoot } from "react-dom/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import "./css/style.css";
+import LengthOption from "./LengthOption";
 
 const ResponseLengthSelector = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedLength, setSelectedLength] = useState("medium");
+  const [selectedLength, setSelectedLength] = useState(null);
   const dropdownRef = useRef(null);
+  const [lengthOptions, setLengthOptions] = useState([100, 300]);
+  const [isAnyLength, setIsAnyLength] = useState(true); //by default it can be any length
 
   //runs once at the beginning and then at the end during cleanup
   useEffect(() => {
@@ -25,51 +27,39 @@ const ResponseLengthSelector = () => {
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
-  const handleOptionChange = (event) => {
-    setSelectedLength(event.target.value);
+  const handleSelectLength = (length) => {
+    console.log("handle option change", length);
+    setSelectedLength(length);
     setIsOpen(false);
   };
 
   return (
     <div ref={dropdownRef} className="length-button-container">
       <button onClick={toggleDropdown} className="length-button">
-        <span>Response Length</span>
+        <span>
+          {selectedLength ? ` < ${selectedLength} words` : "Response Length"}
+        </span>
         <FontAwesomeIcon icon={faChevronDown} className="icon" />
       </button>
       {isOpen && (
-        <div
-          style={{
-            position: "absolute",
-            top: "100%",
-            right: "0",
-            backgroundColor: "#2d2d2d",
-            border: "1px solid #424242",
-            borderRadius: "4px",
-            padding: "10px",
-            marginTop: "5px",
-          }}
-        >
-          {["Short", "Medium", "Long"].map((option) => (
-            <label
-              key={option}
-              style={{
-                display: "block",
-                marginBottom: "5px",
-                color: "#ececec",
-                cursor: "pointer",
+        <div className="length-menu-container">
+          {/*Need to have an option for the any length, need to figure out how to change length*/}
+          {lengthOptions.map((length, index) => (
+            <LengthOption
+              key={length}
+              handleSelectLength={(length) => handleSelectLength(length)}
+              handleLengthEdit={(newLength) => {
+                const newLengthOptions = [...lengthOptions];
+                newLengthOptions[index] = newLength;
+                setLengthOptions(newLengthOptions);
+                console.log("new length options set", newLengthOptions);
               }}
-            >
-              <input
-                type="radio"
-                name="response-length"
-                value={option.toLowerCase()}
-                checked={selectedLength === option.toLowerCase()}
-                onChange={handleOptionChange}
-                style={{ marginRight: "5px" }}
-              />
-              {option}
-            </label>
+              length={length}
+            />
           ))}
+          <button onClick={() => setIsAnyLength(!isAnyLength)}>
+            Any Length
+          </button>
         </div>
       )}
     </div>
@@ -77,24 +67,3 @@ const ResponseLengthSelector = () => {
 };
 
 export default ResponseLengthSelector;
-
-// Function to inject the React component
-const injectReactComponent = () => {
-  const injectElement = document.createElement("div");
-  injectElement.id = "response-length-selector-root";
-  document.body.appendChild(injectElement);
-
-  const root = createRoot(injectElement);
-  root.render(<ResponseLengthSelector />);
-};
-
-// Poll every 500ms until the main element is found
-const intervalId = setInterval(() => {
-  const main = document.querySelector("main");
-  console.log("polling for main");
-
-  if (main) {
-    clearInterval(intervalId);
-    injectReactComponent();
-  }
-}, 500);

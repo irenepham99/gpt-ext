@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./ResponseLengthSelector.js",
+  entry: "./index.js",
   output: {
     filename: "content.js",
     path: path.resolve(__dirname, "dist"),
