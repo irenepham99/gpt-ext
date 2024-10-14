@@ -25,19 +25,40 @@ const ResponseLengthSelector = () => {
     };
   }, []);
 
+  //when clicking enter it adds the prefix and we see trusted message once
   useEffect(() => {
     console.log("in use effect for button listening");
     const handleSubmit = (event) => {
+      event.stopImmediatePropagation();
       console.log("in handle submit click detected");
-      const form = event.target.closest("form");
-      if (form) {
-        const p = form.querySelector("p");
-        if (p) {
-          console.log("Submitting form with value:", p.textContent);
-        }
+
+      if (event.isTrusted != null && event.isTrusted == false) {
+        console.log("event is not trusted");
+        return;
       }
+      console.log("event is trusted");
+
+      queueMicrotask(() => {
+        const form = event.target.closest("form");
+        if (form) {
+          const p = form.querySelector("p");
+          if (p) {
+            p.textContent = "tell me a joke " + p.textContent;
+            console.log("Submitting form with value:", p.textContent);
+          }
+        }
+      });
+      const newEvent = new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        isTrusted: false,
+      });
+      event.target.dispatchEvent(newEvent);
     };
 
+    // when send button is enabled add text doesnt work cause then the user sees it
+    //TODO need to check for when the send button detaches again, also handle enter key
     const attachListeners = () => {
       //select butttons that are not disabled
       const sendButton = document.querySelector(
@@ -45,8 +66,23 @@ const ResponseLengthSelector = () => {
       );
       if (sendButton) {
         console.log("found the send button");
-        sendButton.addEventListener("click", handleSubmit, true);
-        sendButton.addEventListener("mousedown", handleSubmit, true);
+        sendButton.addEventListener(
+          "click",
+          (event) => handleSubmit(event),
+          true
+        );
+        const form = sendButton.closest("form");
+        if (form) {
+          form.addEventListener(
+            "keydown",
+            (event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                handleSubmit(event);
+              }
+            },
+            true
+          );
+        }
       } else {
         console.log("did not find the send button");
         // If the button isn't found, try again after a short delay
