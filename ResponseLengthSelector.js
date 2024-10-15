@@ -10,12 +10,24 @@ const ResponseLengthSelector = () => {
   const dropdownRef = useRef(null);
   const [lengthOptions, setLengthOptions] = useState([100, 300]);
   const [isAnyLength, setIsAnyLength] = useState(true); //by default it can be any length
+  const [lengthEditError, setLengthEditError] = useState(null);
+  const [buttonClickedOnce, setButtonClickedOnce] = useState(false);
+  const attachSendListenersRef = useRef(null);
+  const isAnyLengthRef = useRef(isAnyLength);
+  const selectedLengthRef = useRef(selectedLength);
+
+  // Update refs when the state changes
+  useEffect(() => {
+    isAnyLengthRef.current = isAnyLength;
+    selectedLengthRef.current = selectedLength;
+  }, [isAnyLength, selectedLength]);
 
   //detect clicks outside of the dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
+        setLengthEditError(null);
       }
     };
 
@@ -25,24 +37,33 @@ const ResponseLengthSelector = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const handleSubmit = (event) => {
-      event.stopImmediatePropagation();
+  const handleSubmit = (event) => {
+    event.stopImmediatePropagation();
 
-      const form = event.target.closest("form");
-      if (form) {
-        const p = form.querySelector("p");
-        console.log("form submitted", isAnyLength);
-        if (p && !isAnyLength) {
-          p.textContent =
-            `in less than ${selectedLength} words ` + p.textContent;
-          console.log("Submitting form with value:", p.textContent);
-        }
+    const form = event.target.closest("form");
+    if (form) {
+      const p = form.querySelector("p");
+      console.log(
+        "form submitted",
+        isAnyLengthRef.current,
+        selectedLengthRef.current
+      );
+      if (p && !isAnyLengthRef.current) {
+        p.textContent =
+          `in less than ${selectedLengthRef.current} words ` + p.textContent;
+        console.log("Submitting form with value:", p.textContent);
       }
+    }
 
-      setTimeout(attachSendListeners, 3000);
-    };
+    setTimeout(() => {
+      if (attachSendListenersRef.current) {
+        attachSendListenersRef.current();
+      }
+    }, 1000);
+  };
 
+  //need to call this after hearing a submit event
+  useEffect(() => {
     const attachSendListeners = () => {
       //select butttons that are not disabled and not the stop button
       let sendButton = document.querySelector(
@@ -74,6 +95,7 @@ const ResponseLengthSelector = () => {
       }
     };
 
+    attachSendListenersRef.current = attachSendListeners;
     attachSendListeners();
 
     return () => {
@@ -85,50 +107,60 @@ const ResponseLengthSelector = () => {
         sendButton.removeEventListener("mousedown", handleSubmit);
       }
     };
-  }, [isAnyLength, selectedLength]);
-
-  //   //its adding another p, if theres a p with class placeholder, if theres already text then append it to the front
-  //   useEffect(() => {
-  //     const updatePromptTextarea = () => {
-  //       console.log("in updatePromptTextarea");
-  //       const promptTextarea = document.getElementById("prompt-textarea");
-  //       const placeholder = promptTextarea.querySelector("p.placeholder");
-  //       if (promptTextarea && selectedLength && !isAnyLength) {
-  //         if (placeholder) {
-  //           // Remove the first child of the promptTextarea
-  //           if (
-  //             promptTextarea.firstChild &&
-  //             promptTextarea.firstChild.textContent.trim() === ""
-  //           ) {
-  //             console.log("removing first child");
-  //             promptTextarea.removeChild(promptTextarea.firstChild);
-  //           }
-  //         } else {
-  //           console.log(
-  //             "appending instruction to first child since there is already text"
-  //           );
-  //           promptTextarea.firstChild.textContent =
-  //             `in under ${selectedLength} words or less` +
-  //             promptTextarea.firstChild.textContent;
-  //         }
-  //       }
-  //     };
-  //     updatePromptTextarea();
-  //   }, [selectedLength, isAnyLength]);
+  }, []);
 
   const handleSelectLength = (length) => {
     console.log("handle option change", length);
     setIsAnyLength(false);
     setSelectedLength(length);
     setIsOpen(false);
+    setButtonClickedOnce(true);
+  };
+
+  //return whether or not lenght is valid
+  const handleLengthEdit = (newLength, index) => {
+    newLength = parseInt(newLength);
+
+    if (newLength <= 0) {
+      setLengthEditError("The new length must be greater than 0");
+      return false;
+    }
+    console.log(
+      "new length",
+      newLength,
+      lengthOptions,
+      typeof lengthOptions[0],
+      typeof newLength
+    );
+    if (lengthOptions.includes(newLength)) {
+      setLengthEditError("The new length must be unique");
+      return false;
+    }
+    //if the length we're editing is the one that we selected we need to update selectedLength
+    if (index == lengthOptions.indexOf(selectedLength)) {
+      setSelectedLength(newLength);
+    }
+    const newLengthOptions = [...lengthOptions];
+    newLengthOptions[index] = newLength;
+    setLengthOptions(newLengthOptions);
+    console.log("new length options set", newLengthOptions);
+    return true;
+  };
+
+  const getButtonText = () => {
+    if (!buttonClickedOnce) {
+      return "Response Length";
+    } else if (isAnyLength) {
+      return "Any Length";
+    } else {
+      return `< ${selectedLength} words`;
+    }
   };
 
   return (
     <div ref={dropdownRef} className="length-button-container">
       <button onClick={() => setIsOpen(!isOpen)} className="length-button">
-        <span>
-          {selectedLength ? ` < ${selectedLength} words` : "Response Length"}
-        </span>
+        <span>{getButtonText()}</span>
         <FontAwesomeIcon icon={faChevronDown} className="icon" />
       </button>
       {isOpen && (
@@ -138,12 +170,9 @@ const ResponseLengthSelector = () => {
             <LengthOption
               key={length}
               handleSelectLength={(length) => handleSelectLength(length)}
-              handleLengthEdit={(newLength) => {
-                const newLengthOptions = [...lengthOptions];
-                newLengthOptions[index] = newLength;
-                setLengthOptions(newLengthOptions);
-                console.log("new length options set", newLengthOptions);
-              }}
+              handleLengthEdit={(newLength) =>
+                handleLengthEdit(newLength, index)
+              }
               length={length}
             />
           ))}
@@ -152,10 +181,12 @@ const ResponseLengthSelector = () => {
               setIsAnyLength(true);
               setIsOpen(false);
               setSelectedLength(null);
+              setButtonClickedOnce(true);
             }}
           >
             Any Length
           </button>
+          {lengthEditError && <p className="error">{lengthEditError}</p>}
         </div>
       )}
     </div>

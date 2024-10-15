@@ -8,29 +8,38 @@ function LengthOption({ handleLengthEdit, handleSelectLength, length }) {
   //when the new length is entered pass it back to the parent
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editedLength, setEditedLength] = useState(length);
+  const [curLength, setCurLength] = useState(length);
+  const [previousLength, setPreviousLength] = useState(length);
 
+  const handleLengthChangeSubmit = () => {
+    setIsEditing(false);
+    if (!handleLengthEdit(curLength)) {
+      setCurLength(previousLength);
+    } else {
+      setPreviousLength(curLength);
+    }
+  };
+
+  //if length  is not valid set it to previous length
   if (isEditing) {
     return (
       <div style={{ display: "flex", alignItems: "center", width: "auto" }}>
         <span>&lt;</span>
         <input
           type="number"
-          value={editedLength}
+          value={curLength}
           onChange={(e) => {
-            setEditedLength(e.target.value);
+            setCurLength(e.target.value);
             console.log("edited length", e.target.value);
           }}
           onBlur={() => {
             console.log("blurred");
-            setIsEditing(false);
-            handleLengthEdit(editedLength);
+            handleLengthChangeSubmit();
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               console.log("enter key pressed");
-              setIsEditing(false);
-              handleLengthEdit(editedLength);
+              handleLengthChangeSubmit();
             }
           }}
           className="number-input"
@@ -56,9 +65,9 @@ function LengthOption({ handleLengthEdit, handleSelectLength, length }) {
           alignItems: "center",
           whiteSpace: "nowrap",
         }}
-        onClick={() => handleSelectLength(editedLength)}
+        onClick={() => handleSelectLength(length)}
       >
-        <span style={{ marginRight: "4px" }}>&lt; {editedLength} words</span>
+        <span style={{ marginRight: "4px" }}>&lt; {curLength} words</span>
         <FontAwesomeIcon
           icon={faEdit}
           onClick={(e) => {
