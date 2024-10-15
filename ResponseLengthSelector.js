@@ -38,6 +38,11 @@ const ResponseLengthSelector = () => {
   }, []);
 
   const handleSubmit = (event) => {
+    const clickedButton = event.target.closest("button"); //the target is the svg
+    if (clickedButton.dataset.testid !== "send-button") {
+      return;
+    }
+
     event.stopImmediatePropagation();
 
     const form = event.target.closest("form");
