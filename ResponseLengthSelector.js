@@ -37,9 +37,10 @@ const ResponseLengthSelector = () => {
     };
   }, []);
 
+  //modfiy prompt test sent when prompt is submitted to the server
   const handleSubmit = (event) => {
     const clickedButton = event.target.closest("button"); //the target is the svg
-    if (clickedButton.dataset.testid !== "send-button") {
+    if (clickedButton && clickedButton.dataset.testid !== "send-button") {
       return;
     }
 
@@ -67,7 +68,6 @@ const ResponseLengthSelector = () => {
     }, 1000);
   };
 
-  //need to call this after hearing a submit event
   useEffect(() => {
     const attachSendListeners = () => {
       //select butttons that are not disabled and not the stop button
@@ -122,24 +122,24 @@ const ResponseLengthSelector = () => {
     setButtonClickedOnce(true);
   };
 
-  //return whether or not lenght is valid
-  const handleLengthEdit = (newLength, index) => {
+  //checks whether length is positive and unique
+  const isLengthValid = (newLength) => {
     newLength = parseInt(newLength);
-
     if (newLength <= 0) {
-      setLengthEditError("The new length must be greater than 0");
+      setLengthEditError("Response length cannot be 0 or negative");
       return false;
     }
-    console.log(
-      "new length",
-      newLength,
-      lengthOptions,
-      typeof lengthOptions[0],
-      typeof newLength
-    );
     if (lengthOptions.includes(newLength)) {
-      setLengthEditError("The new length must be unique");
+      setLengthEditError("The new response length must be unique");
       return false;
+    }
+    return true;
+  };
+
+  const handleLengthEdit = (newLength, index) => {
+    newLength = parseInt(newLength);
+    if (!isLengthValid(newLength)) {
+      return;
     }
     //if the length we're editing is the one that we selected we need to update selectedLength
     if (index == lengthOptions.indexOf(selectedLength)) {
@@ -164,16 +164,18 @@ const ResponseLengthSelector = () => {
 
   return (
     <div ref={dropdownRef} className="length-button-container">
-      <button onClick={() => setIsOpen(!isOpen)} className="length-button">
+      <button onClick={() => setIsOpen(!isOpen)} className="gpt-ext-button">
         <span>{getButtonText()}</span>
         <FontAwesomeIcon icon={faChevronDown} className="icon" />
       </button>
       {isOpen && (
         <div className="length-menu-container">
+          {lengthEditError && <p className="error-text">{lengthEditError}</p>}
           {/*Need to have an option for the any length, need to figure out how to change length*/}
           {lengthOptions.map((length, index) => (
             <LengthOption
               key={length}
+              isLengthValid={isLengthValid}
               handleSelectLength={(length) => handleSelectLength(length)}
               handleLengthEdit={(newLength) =>
                 handleLengthEdit(newLength, index)
@@ -188,10 +190,10 @@ const ResponseLengthSelector = () => {
               setSelectedLength(null);
               setButtonClickedOnce(true);
             }}
+            className="menu-button"
           >
             Any Length
           </button>
-          {lengthEditError && <p className="error">{lengthEditError}</p>}
         </div>
       )}
     </div>

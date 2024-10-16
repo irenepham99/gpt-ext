@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import "./css/style.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 const ScrollUpButton = () => {
-  const [isAtBottom, setIsAtBottom] = React.useState(false);
-  const [isArticleLong, setIsArticleLong] = React.useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const [isArticleLong, setIsArticleLong] = useState(false);
+  const [showText, setShowText] = useState(window.innerWidth >= 592);
 
-  const scrollToLastArticle = () => {
+  useEffect(() => {
+    const handleResize = () => {
+      setShowText(window.innerWidth >= 592);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const scrollToTopLastArticle = () => {
     const articles = document.getElementsByTagName("article");
     if (articles.length > 0) {
       const lastArticle = articles[articles.length - 1];
@@ -18,13 +31,12 @@ const ScrollUpButton = () => {
     if (articles.length > 0) {
       const lastArticle = articles[articles.length - 1];
       const rect = lastArticle.getBoundingClientRect();
-      //console.log(rect.bottom, window.innerHeight);
       const isAtBottom = rect.bottom <= window.innerHeight;
       setIsAtBottom(isAtBottom);
     }
   };
 
-  //checks if the last article is long
+  //checks if the last article height exceeds the height of the window and if scrolling up makes sense
   const checkIfArticleIsLong = () => {
     const articles = document.querySelectorAll("article div[class*='m-auto']");
     const hfullDiv = document.querySelector("main div.h-full");
@@ -32,11 +44,7 @@ const ScrollUpButton = () => {
       const lastArticle = articles[articles.length - 1];
       const lastArticleHeight = lastArticle.offsetHeight;
       const hfullHeight = hfullDiv.offsetHeight;
-      //console.log("Height of h-full div:", hfullHeight);
       const adjustedHeight = hfullHeight - 100;
-      //console.log("Adjusted height:", adjustedHeight);
-      //console.log("last article height", lastArticleHeight);
-      //console.log(lastArticleHeight > adjustedHeight);
       setIsArticleLong(lastArticleHeight > adjustedHeight);
     } else {
       console.log("no articles or hfull div found", articles, hfullDiv);
@@ -44,12 +52,10 @@ const ScrollUpButton = () => {
     return null;
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const intervalId = setInterval(() => {
       checkIfAtBottom();
       checkIfArticleIsLong();
-      //   console.log("isAtBottom", isAtBottom);
-      //   console.log("isArticleLong", isArticleLong);
     }, 2000);
 
     return () => {
@@ -61,15 +67,11 @@ const ScrollUpButton = () => {
     isAtBottom &&
     isArticleLong && (
       <button
-        style={{
-          position: "fixed",
-          bottom: "100px",
-          right: "250px",
-          backgroundColor: "red",
-        }}
-        onClick={scrollToLastArticle}
+        className="gpt-ext-button scroll-up-button"
+        onClick={scrollToTopLastArticle}
       >
-        Scroll to Last Article
+        <FontAwesomeIcon icon={faArrowUp} className="icon" />
+        {showText && "To Response Start"}
       </button>
     )
   );

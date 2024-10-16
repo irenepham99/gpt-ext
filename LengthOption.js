@@ -3,7 +3,12 @@ import React, { useState } from "react";
 import "./css/style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function LengthOption({ handleLengthEdit, handleSelectLength, length }) {
+function LengthOption({
+  handleLengthEdit,
+  isLengthValid,
+  handleSelectLength,
+  length,
+}) {
   //when the edit button is clicked change the appearance
   //when the new length is entered pass it back to the parent
 
@@ -13,17 +18,18 @@ function LengthOption({ handleLengthEdit, handleSelectLength, length }) {
 
   const handleLengthChangeSubmit = () => {
     setIsEditing(false);
-    if (!handleLengthEdit(curLength)) {
+    //if its not a valid length set the length to the previous value
+    if (!isLengthValid(curLength)) {
       setCurLength(previousLength);
     } else {
       setPreviousLength(curLength);
+      handleLengthEdit(curLength);
     }
   };
 
-  //if length  is not valid set it to previous length
   if (isEditing) {
     return (
-      <div style={{ display: "flex", alignItems: "center", width: "auto" }}>
+      <div className="menu-button" style={{ gap: "8px" }}>
         <span>&lt;</span>
         <input
           type="number"
@@ -42,16 +48,8 @@ function LengthOption({ handleLengthEdit, handleSelectLength, length }) {
               handleLengthChangeSubmit();
             }
           }}
-          className="number-input"
+          className="edit-input"
           autoFocus
-          style={{
-            backgroundColor: "transparent",
-            border: "1px solid blue",
-            color: "white",
-            padding: "2px 4px",
-            width: "60px",
-            height: "24px",
-          }}
         />
         <span>words</span>
       </div>
@@ -59,12 +57,7 @@ function LengthOption({ handleLengthEdit, handleSelectLength, length }) {
   } else {
     return (
       <button
-        style={{
-          padding: "12px 8px",
-          display: "flex",
-          alignItems: "center",
-          whiteSpace: "nowrap",
-        }}
+        className="menu-button"
         onClick={() => handleSelectLength(length)}
       >
         <span style={{ marginRight: "4px" }}>&lt; {curLength} words</span>

@@ -4,18 +4,33 @@ import React from "react";
 import ScrollUpButton from "./ScrollUpButton";
 
 // Function to inject the React component
-const injectReactComponent = () => {
-  const injectElement = document.createElement("div");
-  injectElement.id = "response-length-selector-root";
-  document.body.appendChild(injectElement);
-
-  const root = createRoot(injectElement);
-  root.render(
-    <React.Fragment>
-      <ResponseLengthSelector />
-      <ScrollUpButton />
-    </React.Fragment>
+const injectResponseLengthSelector = () => {
+  const profileButton = document.querySelector(
+    'button[data-testid="profile-button"]'
   );
+  if (profileButton) {
+    const container = profileButton.parentElement("div");
+    if (container) {
+      const injectElement = document.createElement("div");
+      injectElement.id = "response-length-selector-root";
+      container.insertBefore(injectElement, container.firstChild);
+
+      const root = createRoot(injectElement);
+      root.render(<ResponseLengthSelector />);
+    }
+  }
+};
+
+const injectScrollUpButton = () => {
+  const mainContent = document.querySelector("main");
+  if (mainContent) {
+    const injectElement = document.createElement("div");
+    injectElement.id = "scroll-up-button-container";
+    injectElement.style.position = "relative";
+    mainContent.appendChild(injectElement);
+    const root = createRoot(injectElement);
+    root.render(<ScrollUpButton />);
+  }
 };
 
 // Poll every 500ms until the main element is found
@@ -25,6 +40,7 @@ const intervalId = setInterval(() => {
 
   if (main) {
     clearInterval(intervalId);
-    injectReactComponent();
+    injectResponseLengthSelector();
+    injectScrollUpButton();
   }
 }, 500);
