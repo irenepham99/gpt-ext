@@ -2,7 +2,6 @@ import { createRoot } from "react-dom/client";
 import ResponseLengthSelector from "./ResponseLengthSelector";
 import React from "react";
 import ScrollUpButton from "./ScrollUpButton";
-import { faMartiniGlass } from "@fortawesome/free-solid-svg-icons";
 
 // Function to inject the React component
 const injectScrollUpButton = () => {

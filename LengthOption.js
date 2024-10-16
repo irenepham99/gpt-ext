@@ -10,9 +10,6 @@ function LengthOption({
   length,
   isSelected,
 }) {
-  //when the edit button is clicked change the appearance
-  //when the new length is entered pass it back to the parent
-
   const [isEditing, setIsEditing] = useState(false);
   const [curLength, setCurLength] = useState(length);
   const [previousLength, setPreviousLength] = useState(length);
@@ -42,15 +39,12 @@ function LengthOption({
           value={curLength}
           onChange={(e) => {
             setCurLength(e.target.value);
-            console.log("edited length", e.target.value);
           }}
           onBlur={() => {
-            console.log("blurred");
             handleLengthChangeSubmit();
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              console.log("enter key pressed");
               handleLengthChangeSubmit();
             }
           }}
@@ -63,12 +57,8 @@ function LengthOption({
   } else {
     return (
       <button
-        className="menu-button"
+        className={`menu-button ${isSelected ? "selected" : ""}`}
         onClick={() => handleSelectLength(length)}
-        style={{
-          borderRadius: "4px",
-          ...(isSelected && { border: "2px solid var(--border-color)" }),
-        }}
       >
         <span style={{ marginRight: "4px" }}>&lt; {curLength} words</span>
         <FontAwesomeIcon

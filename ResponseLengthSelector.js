@@ -7,7 +7,6 @@ import LengthOption from "./LengthOption";
 const ResponseLengthSelector = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLength, setSelectedLength] = useState(null);
-  const dropdownRef = useRef(null);
   const [lengthOptions, setLengthOptions] = useState([100, 300]);
   const [isAnyLength, setIsAnyLength] = useState(true); //by default it can be any length
   const [lengthEditError, setLengthEditError] = useState(null);
@@ -15,40 +14,67 @@ const ResponseLengthSelector = () => {
   const attachSendListenersRef = useRef(null);
   const isAnyLengthRef = useRef(isAnyLength);
   const selectedLengthRef = useRef(selectedLength);
+  const lengthButtonContainerRef = useRef(null);
+  const lengthMenuContainerRef = useRef(null);
   const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 600);
 
+  //dyanmically place buttons based on screen size and content
   useEffect(() => {
-    const handleResize = () => {
+    const handleResizeCheckWideScreen = () => {
       setIsWideScreen(window.innerWidth > 600);
     };
 
-    window.addEventListener("resize", handleResize);
+    const handleResizePlaceButton = () => {
+      const article = document.getElementsByTagName("article");
+
+      if (article.length === 0 && lengthButtonContainerRef.current) {
+        lengthButtonContainerRef.current.style.right = "60px";
+      } else if (article.length > 0 && lengthButtonContainerRef.current) {
+        lengthButtonContainerRef.current.style.right =
+          window.innerWidth > 767 ? "180px" : "60px";
+      }
+      if (article.length === 0 && lengthMenuContainerRef.current) {
+        lengthMenuContainerRef.current.style.right = "60px";
+      } else if (article.length > 0 && lengthMenuContainerRef.current) {
+        lengthMenuContainerRef.current.style.right =
+          window.innerWidth > 767 ? "180px" : "60px";
+      }
+    };
+
+    //call once at the beginning
+    handleResizePlaceButton();
+    window.addEventListener("resize", handleResizeCheckWideScreen);
+    window.addEventListener("resize", handleResizePlaceButton);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", handleResizeCheckWideScreen);
+      window.removeEventListener("resize", handleResizePlaceButton);
     };
   }, []);
-
-  // Update refs when the state changes
-  useEffect(() => {
-    isAnyLengthRef.current = isAnyLength;
-    selectedLengthRef.current = selectedLength;
-  }, [isAnyLength, selectedLength]);
 
   //detect clicks outside of the dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        lengthButtonContainerRef.current &&
+        !lengthButtonContainerRef.current.contains(event.target)
+      ) {
         setIsOpen(false);
         setLengthEditError(null);
       }
+    };
 
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Update refs when the state changes, refs are needed due to how handleSubmit is configured as a listener but needs to access its latest value
+  useEffect(() => {
+    isAnyLengthRef.current = isAnyLength;
+    selectedLengthRef.current = selectedLength;
+  }, [isAnyLength, selectedLength]);
 
   //modfiy prompt test sent when prompt is submitted to the server
   const handleSubmit = (event) => {
@@ -62,18 +88,13 @@ const ResponseLengthSelector = () => {
     const form = event.target.closest("form");
     if (form) {
       const p = form.querySelector("p");
-      console.log(
-        "form submitted",
-        isAnyLengthRef.current,
-        selectedLengthRef.current
-      );
       if (p && !isAnyLengthRef.current) {
         p.textContent =
           `in less than ${selectedLengthRef.current} words ` + p.textContent;
-        console.log("Submitting form with value:", p.textContent);
       }
     }
 
+    //the send button will change to a stop button so we need to reattach the listeners
     setTimeout(() => {
       if (attachSendListenersRef.current) {
         attachSendListenersRef.current();
@@ -87,9 +108,7 @@ const ResponseLengthSelector = () => {
       let sendButton = document.querySelector(
         'button[data-testid="send-button"]:not(:disabled):not([data-testid="stop-button"])'
       );
-      console.log("looking for send button");
       if (sendButton) {
-        console.log("found the send button", sendButton);
         sendButton.addEventListener(
           "click",
           (event) => handleSubmit(event),
@@ -108,8 +127,7 @@ const ResponseLengthSelector = () => {
           );
         }
       } else {
-        console.log("did not find the send button");
-        setTimeout(attachSendListeners, 3000);
+        setTimeout(attachSendListeners, 1000);
       }
     };
 
@@ -128,7 +146,6 @@ const ResponseLengthSelector = () => {
   }, []);
 
   const handleSelectLength = (length) => {
-    console.log("handle option change", length);
     setIsAnyLength(false);
     setSelectedLength(length);
     setIsOpen(false);
@@ -161,7 +178,6 @@ const ResponseLengthSelector = () => {
     const newLengthOptions = [...lengthOptions];
     newLengthOptions[index] = newLength;
     setLengthOptions(newLengthOptions);
-    console.log("new length options set", newLengthOptions);
     return true;
   };
 
@@ -176,7 +192,7 @@ const ResponseLengthSelector = () => {
   };
 
   return (
-    <div ref={dropdownRef} className="length-button-container">
+    <div ref={lengthButtonContainerRef} className="length-button-container">
       <button onClick={() => setIsOpen(!isOpen)} className="gpt-ext-button">
         <FontAwesomeIcon icon={faRuler} style={{ fontSize: "16px" }} />
         {isWideScreen && (
@@ -187,7 +203,7 @@ const ResponseLengthSelector = () => {
         )}
       </button>
       {isOpen && (
-        <div className="length-menu-container">
+        <div ref={lengthMenuContainerRef} className="length-menu-container">
           {lengthEditError && <p className="error-text">{lengthEditError}</p>}
           {/*Need to have an option for the any length, need to figure out how to change length*/}
           {lengthOptions.map((length, index) => (

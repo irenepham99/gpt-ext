@@ -8,6 +8,7 @@ const ScrollUpButton = () => {
   const [isArticleLong, setIsArticleLong] = useState(false);
   const [showText, setShowText] = useState(window.innerWidth >= 592);
 
+  //show button text based on screen size
   useEffect(() => {
     const handleResize = () => {
       setShowText(window.innerWidth >= 592);
@@ -46,8 +47,6 @@ const ScrollUpButton = () => {
       const hfullHeight = hfullDiv.offsetHeight;
       const adjustedHeight = hfullHeight - 100;
       setIsArticleLong(lastArticleHeight > adjustedHeight);
-    } else {
-      console.log("no articles or hfull div found", articles, hfullDiv);
     }
     return null;
   };
