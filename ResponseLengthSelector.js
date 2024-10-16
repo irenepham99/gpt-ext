@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faRuler } from "@fortawesome/free-solid-svg-icons";
 import "./css/style.css";
 import LengthOption from "./LengthOption";
 
@@ -15,6 +15,19 @@ const ResponseLengthSelector = () => {
   const attachSendListenersRef = useRef(null);
   const isAnyLengthRef = useRef(isAnyLength);
   const selectedLengthRef = useRef(selectedLength);
+  const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 600);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsWideScreen(window.innerWidth > 600);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   // Update refs when the state changes
   useEffect(() => {
@@ -29,11 +42,11 @@ const ResponseLengthSelector = () => {
         setIsOpen(false);
         setLengthEditError(null);
       }
-    };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
     };
   }, []);
 
@@ -165,8 +178,13 @@ const ResponseLengthSelector = () => {
   return (
     <div ref={dropdownRef} className="length-button-container">
       <button onClick={() => setIsOpen(!isOpen)} className="gpt-ext-button">
-        <span>{getButtonText()}</span>
-        <FontAwesomeIcon icon={faChevronDown} className="icon" />
+        <FontAwesomeIcon icon={faRuler} style={{ fontSize: "16px" }} />
+        {isWideScreen && (
+          <>
+            <span>{getButtonText()}</span>
+            <FontAwesomeIcon icon={faChevronDown} className="icon" />
+          </>
+        )}
       </button>
       {isOpen && (
         <div className="length-menu-container">
@@ -181,6 +199,7 @@ const ResponseLengthSelector = () => {
                 handleLengthEdit(newLength, index)
               }
               length={length}
+              isSelected={selectedLength === length}
             />
           ))}
           <button

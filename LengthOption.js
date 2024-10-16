@@ -8,6 +8,7 @@ function LengthOption({
   isLengthValid,
   handleSelectLength,
   length,
+  isSelected,
 }) {
   //when the edit button is clicked change the appearance
   //when the new length is entered pass it back to the parent
@@ -29,7 +30,12 @@ function LengthOption({
 
   if (isEditing) {
     return (
-      <div className="menu-button" style={{ gap: "8px" }}>
+      <div
+        className="menu-button"
+        style={{
+          gap: "8px",
+        }}
+      >
         <span>&lt;</span>
         <input
           type="number"
@@ -59,6 +65,10 @@ function LengthOption({
       <button
         className="menu-button"
         onClick={() => handleSelectLength(length)}
+        style={{
+          borderRadius: "4px",
+          ...(isSelected && { border: "2px solid var(--border-color)" }),
+        }}
       >
         <span style={{ marginRight: "4px" }}>&lt; {curLength} words</span>
         <FontAwesomeIcon
