@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import "./css/style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import "./style.css";
 
 const ScrollUpButton = () => {
   const [isAtBottom, setIsAtBottom] = useState(false);

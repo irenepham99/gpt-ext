@@ -1,0 +1,99 @@
+:root {
+  --primary-bg: #212120;
+  --primary-text: #ececec;
+  --border-color: #424242;
+  --secondary-bg: #2f2f2f;
+  --icon-color: #b4b4b4;
+  --hover-bg: #696969;
+  --error-color: red;
+}
+
+.gpt-ext-button {
+  z-index: 10000;
+  padding: 8px 14px;
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  font-size: 14px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.scroll-up-button {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.icon {
+  font-size: 12px;
+}
+
+.length-button-container {
+  position: fixed;
+  top: 10px;
+}
+
+.length-menu-container {
+  position: fixed;
+  top: 60px;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 8px 8px;
+  width: 200px;
+}
+
+.edit-icon {
+  font-size: 12px;
+  padding: 8px 8px;
+  color: var(--icon-color);
+}
+
+.edit-icon:hover {
+  background-color: var(--hover-bg);
+  color: var(--primary-text);
+  border-radius: 4px;
+}
+
+.edit-input {
+  background-color: transparent;
+  border: 1p solid blue;
+  color: white;
+  padding: 2px 4px;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.menu-button {
+  padding: 12px 12px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  justify-content: space-between;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.menu-button:hover {
+  background-color: var(--border-color);
+}
+
+.menu-button.selected {
+  border: 2px solid var(--border-color);
+}
+
+.menu-button.selected:hover {
+  background-color: var(--border-color);
+}
+
+.error-text {
+  color: var(--error-color);
+  font-size: 14px;
+  padding: 8px 4px;
+}

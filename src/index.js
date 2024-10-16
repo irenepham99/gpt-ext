@@ -1,6 +1,6 @@
+import React from "react";
 import { createRoot } from "react-dom/client";
 import ResponseLengthSelector from "./ResponseLengthSelector";
-import React from "react";
 import ScrollUpButton from "./ScrollUpButton";
 
 // Function to inject the React component

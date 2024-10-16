@@ -1,7 +1,7 @@
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import React, { useState } from "react";
-import "./css/style.css";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "./style.css";
 
 function LengthOption({
   handleLengthEdit,
