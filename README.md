@@ -29,15 +29,18 @@ Hold on just a tad - the extension is still under review in the chrome extension
 <br>
 Hit the "Response Length" button to select a maximum word count for GPT to output its responses within.
 <br>
+
 ![Response Length Button Open](https://drive.google.com/uc?export=view&id=1GFKq1FMawgm6z1TlAWMBchTfoDYxSP_M)
 
 <br>
 Edit the presets for response lengths to your liking!
 <br>
+
 ![Edit Response Length Options](https://drive.google.com/uc?export=view&id=1zJMpsrg7Q7SMscndhl01NCIVQr8yW25z)
 
 <br>
 Often GPT will output long response, use the "To Response Start" button to automatically back to the top. 
 <br>
+
 ![To Response Start Button](https://drive.google.com/uc?export=view&id=1aLjhG36RqPClOE1UpEesBb_4N3KV_o_-)
 
