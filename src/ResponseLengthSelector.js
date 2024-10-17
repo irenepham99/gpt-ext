@@ -17,6 +17,7 @@ const ResponseLengthSelector = () => {
   const lengthButtonContainerRef = useRef(null);
   const lengthMenuContainerRef = useRef(null);
   const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 600);
+  const [currentUrl, setCurrentUrl] = useState(window.location.href);
 
   //dyanmically place buttons based on screen size and content
   useEffect(() => {
@@ -41,16 +42,40 @@ const ResponseLengthSelector = () => {
       }
     };
 
+    const handleUrlChange = () => {
+      if (window.location.href !== currentUrl) {
+        setCurrentUrl(window.location.href);
+        handleResizeCheckWideScreen();
+        handleResizePlaceButton();
+      }
+    };
+
     //call once at the beginning
     handleResizePlaceButton();
+    const intervalId = setInterval(handleUrlChange, 2000);
     window.addEventListener("resize", handleResizeCheckWideScreen);
     window.addEventListener("resize", handleResizePlaceButton);
 
     return () => {
       window.removeEventListener("resize", handleResizeCheckWideScreen);
       window.removeEventListener("resize", handleResizePlaceButton);
+      clearInterval(intervalId);
     };
-  }, []);
+  }, [currentUrl]);
+
+  useEffect(() => {
+    const handleUrlChange = () => {
+      if (window.location.href !== currentUrl) {
+        setCurrentUrl(window.location.href);
+
+        console.log("URL changed to:", window.location.href);
+      }
+    };
+    const intervalId = setInterval(handleUrlChange, 2000);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [currentUrl]);
 
   //detect clicks outside of the dropdown
   useEffect(() => {
@@ -84,7 +109,6 @@ const ResponseLengthSelector = () => {
     }
 
     event.stopImmediatePropagation();
-
     const form = event.target.closest("form");
     if (form) {
       const p = form.querySelector("p");
@@ -127,7 +151,7 @@ const ResponseLengthSelector = () => {
           );
         }
       } else {
-        setTimeout(attachSendListeners, 1000);
+        setTimeout(attachSendListeners, 500);
       }
     };
 

@@ -3,17 +3,20 @@ import { createRoot } from "react-dom/client";
 import ResponseLengthSelector from "./ResponseLengthSelector";
 import ScrollUpButton from "./ScrollUpButton";
 
-// Function to inject the React component
+//let previousUrl = window.location.href;
+
+//Function to inject the React component
 const injectScrollUpButton = () => {
-  const mainContent = document.querySelector("main");
-  if (mainContent) {
-    const injectElement = document.createElement("div");
-    injectElement.id = "scroll-up-button-container";
-    injectElement.style.position = "relative";
-    mainContent.appendChild(injectElement);
-    const root = createRoot(injectElement);
-    root.render(<ScrollUpButton />);
-  }
+  // const mainContent = document.querySelector("main");
+  // if (mainContent) {
+  const injectElement = document.createElement("div");
+  injectElement.id = "scroll-up-button-container";
+  injectElement.style.position = "relative";
+  // mainContent.appendChild(injectElement);
+  document.body.appendChild(injectElement);
+  const root = createRoot(injectElement);
+  root.render(<ScrollUpButton />);
+  //}
 };
 
 const injectResponseLengthSelector = () => {

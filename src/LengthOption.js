@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import React, { useState, useEffect } from "react";
+import { faCheck, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./style.css";
 
@@ -52,6 +52,13 @@ function LengthOption({
           autoFocus
         />
         <span>words</span>
+        <FontAwesomeIcon
+          icon={faCheck}
+          onClick={() => {
+            handleLengthChangeSubmit();
+          }}
+          className="icon-button"
+        />
       </div>
     );
   } else {
@@ -67,7 +74,7 @@ function LengthOption({
             e.stopPropagation();
             setIsEditing(true);
           }}
-          className="edit-icon"
+          className="icon-button"
         />
       </button>
     );

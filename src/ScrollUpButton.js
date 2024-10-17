@@ -7,13 +7,28 @@ const ScrollUpButton = () => {
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [isArticleLong, setIsArticleLong] = useState(false);
   const [showText, setShowText] = useState(window.innerWidth >= 592);
+  const [buttonLocation, setButtonLocation] = useState(0);
+
+  const calculateButtonLocation = () => {
+    const mainElement = document.querySelector("main");
+    if (mainElement) {
+      const halfMainWidth = mainElement.offsetWidth / 2;
+      console.log("half the width is", halfMainWidth);
+      setButtonLocation(halfMainWidth);
+    } else {
+      console.log("main not found");
+    }
+  };
 
   //show button text based on screen size
   useEffect(() => {
     const handleResize = () => {
       setShowText(window.innerWidth >= 592);
+      calculateButtonLocation();
     };
 
+    //call once at the beginning
+    calculateButtonLocation();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -34,6 +49,7 @@ const ScrollUpButton = () => {
       const rect = lastArticle.getBoundingClientRect();
       const isAtBottom = rect.bottom <= window.innerHeight;
       setIsAtBottom(isAtBottom);
+      console.log("isAtBottom", isAtBottom);
     }
   };
 
@@ -45,8 +61,14 @@ const ScrollUpButton = () => {
       const lastArticle = articles[articles.length - 1];
       const lastArticleHeight = lastArticle.offsetHeight;
       const hfullHeight = hfullDiv.offsetHeight;
-      const adjustedHeight = hfullHeight - 100;
+      const adjustedHeight = hfullHeight - 150;
       setIsArticleLong(lastArticleHeight > adjustedHeight);
+      console.log(
+        "article and hFull exist, isArticleLong",
+        lastArticleHeight > adjustedHeight,
+        lastArticleHeight,
+        adjustedHeight
+      );
     }
     return null;
   };
@@ -66,11 +88,13 @@ const ScrollUpButton = () => {
     isAtBottom &&
     isArticleLong && (
       <button
+        style={{ right: `${buttonLocation}px` }}
         className="gpt-ext-button scroll-up-button"
         onClick={scrollToTopLastArticle}
       >
         <FontAwesomeIcon icon={faArrowUp} className="icon" />
         {showText && "To Response Start"}
+        {console.log("rendered", isAtBottom, isArticleLong)}
       </button>
     )
   );
