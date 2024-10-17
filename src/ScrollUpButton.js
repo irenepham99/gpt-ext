@@ -13,10 +13,7 @@ const ScrollUpButton = () => {
     const mainElement = document.querySelector("main");
     if (mainElement) {
       const halfMainWidth = mainElement.offsetWidth / 2;
-      console.log("half the width is", halfMainWidth);
       setButtonLocation(halfMainWidth);
-    } else {
-      console.log("main not found");
     }
   };
 
@@ -49,7 +46,6 @@ const ScrollUpButton = () => {
       const rect = lastArticle.getBoundingClientRect();
       const isAtBottom = rect.bottom <= window.innerHeight;
       setIsAtBottom(isAtBottom);
-      console.log("isAtBottom", isAtBottom);
     }
   };
 
@@ -63,12 +59,6 @@ const ScrollUpButton = () => {
       const hfullHeight = hfullDiv.offsetHeight;
       const adjustedHeight = hfullHeight - 150;
       setIsArticleLong(lastArticleHeight > adjustedHeight);
-      console.log(
-        "article and hFull exist, isArticleLong",
-        lastArticleHeight > adjustedHeight,
-        lastArticleHeight,
-        adjustedHeight
-      );
     }
     return null;
   };
@@ -94,7 +84,6 @@ const ScrollUpButton = () => {
       >
         <FontAwesomeIcon icon={faArrowUp} className="icon" />
         {showText && "To Response Start"}
-        {console.log("rendered", isAtBottom, isArticleLong)}
       </button>
     )
   );

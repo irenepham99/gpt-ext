@@ -67,8 +67,6 @@ const ResponseLengthSelector = () => {
     const handleUrlChange = () => {
       if (window.location.href !== currentUrl) {
         setCurrentUrl(window.location.href);
-
-        console.log("URL changed to:", window.location.href);
       }
     };
     const intervalId = setInterval(handleUrlChange, 2000);
